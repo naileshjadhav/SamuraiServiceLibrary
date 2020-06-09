@@ -23,7 +23,6 @@ public class SuperCategoryDto {
 	private String superCategoryName;
 	private boolean superCategoryEnable;
 	private LocalDateTime creationDate=LocalDateTime.now();
-	@JsonIgnore
 	private List<SubCategoryDto> subCategories = new ArrayList<SubCategoryDto>();
 	@JsonIgnore
 	private List<ServiceLibraryDto> libraries = new ArrayList<ServiceLibraryDto>();

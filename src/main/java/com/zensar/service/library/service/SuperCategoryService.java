@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zensar.service.library.entity.SubCategory;
 import com.zensar.service.library.entity.SuperCategory;
 import com.zensar.service.library.exception.ResourceNotFound;
 import com.zensar.service.library.model.SuperCategoryDto;
@@ -18,6 +19,13 @@ public class SuperCategoryService {
 
 	@Autowired
 	private SuperCategoryRespository repository;
+
+	public SuperCategoryDto findSuperCategoryByName(String superCategoryName) {
+		SuperCategory category = repository.findBySuperCategoryName(superCategoryName);
+		SuperCategoryDto target = new SuperCategoryDto();
+		BeanUtils.copyProperties(category, target);
+		return target;
+	}
 
 	public SuperCategoryDto getSuperCategoryById(Long id) {
 		SuperCategory category = repository.findById(id)
@@ -47,10 +55,10 @@ public class SuperCategoryService {
 		// Long subCategoryId, String subCategoryName, boolean subCategoryEnable,
 		// LocalDateTime creationDate, List<SuperCategory> superCategory,
 		// List<ServiceLibrary> libraries)
-//		List<SubCategory> subCategories = dto.getSubCategories().stream()
-//				.map(e -> new SubCategory(null,e.getSubCategoryName(),e.isSubCategoryEnable(),e.getCreationDate(),null,null))
-//				.collect(Collectors.toList());
-//		entity.setSubCategory(subCategories);
+		List<SubCategory> subCategories = dto.getSubCategories().stream().map(e -> new SubCategory(null,
+				e.getSubCategoryName(), e.isSubCategoryEnable(), e.getCreationDate(), null, null))
+				.collect(Collectors.toList());
+		entity.setSubCategory(subCategories);
 //		entity.setLibraries(libraries);
 
 //		List<SubCategoryDto> subCategoryDtos = dto.getSubCategories();

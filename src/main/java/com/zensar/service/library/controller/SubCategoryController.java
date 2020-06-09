@@ -33,6 +33,13 @@ public class SubCategoryController {
 		return new ResponseEntity<SubCategoryDto>(dto, HttpStatus.OK);
 	}
 	
+	@GetMapping("/subcategories/{id}")
+	public ResponseEntity<List<SubCategoryDto>> getServiceLibraryBySuperCategoryId(@PathVariable Long id) {
+		log.info("Get sub category by superCategory id::" + id);
+		List<SubCategoryDto> dtos = subCategoryService.getSubcategoryBySuperCategoryId(id);
+		return new ResponseEntity<List<SubCategoryDto>>(dtos, HttpStatus.OK);
+	}
+	
 	@GetMapping("/subcategory")
 	public ResponseEntity<List<SubCategoryDto>> getAllSubcategory() {
 		log.info("Get all subcategory::");

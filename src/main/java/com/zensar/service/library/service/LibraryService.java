@@ -2,6 +2,7 @@ package com.zensar.service.library.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,11 @@ public class LibraryService {
 
 	@Autowired
 	private ServiceLibraryRespository repository;
+	@Autowired
+	SuperCategoryRespository superCategoryRespository;
+	@Autowired
+	SubCategoryRespository subCategoryRespository;
+
 	private static final Logger log = LoggerFactory.getLogger(LibraryService.class);
 
 	public ServiceLibraryDto getServiceLibraryById(Long id) {
@@ -47,32 +53,30 @@ public class LibraryService {
 		return dto;
 	}
 
-//	private ObjectMapper mapper = new ObjectMapper();
-//	@Autowired
-//	private SuperCategoryRespository superCategoryRespository;
-//	@Autowired
-//	private SubCategoryRespository subCategoryRespository;
-
-	@Autowired
-	SuperCategoryRespository superCategoryRespository;
-	@Autowired
-	SubCategoryRespository subCategoryRespository;
-
 //	public ServiceLibraryDto saveServiceLibrary(ServiceLibraryDto dto) {
 //
 //		ServiceLibrary entity = new ServiceLibrary();
 //		BeanUtils.copyProperties(dto, entity);
-//		SuperCategory superCategoryEntity = new SuperCategory();
-//		BeanUtils.copyProperties(dto.getSuperCategory(), superCategoryEntity);
-//		superCategoryEntity = superCategoryRespository.save(superCategoryEntity);
+//		SuperCategory superCategoryEntity = superCategoryRespository
+//				.findBySuperCategoryName(dto.getSuperCategory().getSuperCategoryName());
 //		entity.setSuperCategory(superCategoryEntity);
-//		SubCategory subCategory = new SubCategory();
-//		BeanUtils.copyProperties(dto.getSubCategory(), subCategory);
-//		subCategory.setSuperCategory(superCategoryEntity);
-//		subCategory = subCategoryRespository.save(subCategory);
+//		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
+//		BeanUtils.copyProperties(superCategoryEntity, superCategoryDto);
+//		log.info("sub category Name::" + dto.getSubCategory().getSubCategoryName());
+//		SubCategory subCategory = subCategoryRespository
+//				.findBysubCategoryName(dto.getSubCategory().getSubCategoryName());
+//		SubCategoryDto subCategoryDto = null;
+//		if (subCategory != null) {
+//			log.info("Sub categpry::" + subCategory.getSubCategoryId());
+//			subCategoryDto = new SubCategoryDto();
+//			BeanUtils.copyProperties(subCategory, subCategoryDto );
+//		}
 //		entity.setSubCategory(subCategory);
 //		entity = repository.save(entity);
+//		log.info("SubCategoryId: "+entity.getSubCategory().getSubCategoryId());
 //		BeanUtils.copyProperties(entity, dto);
+//		dto.setSubCategory(subCategoryDto);
+//		dto.setSuperCategory(superCategoryDto);
 //		log.info("Saved library" + dto.getServiceId());
 //		return dto;
 //	}
@@ -81,17 +85,15 @@ public class LibraryService {
 
 		ServiceLibrary entity = new ServiceLibrary();
 		BeanUtils.copyProperties(dto, entity);
-		SuperCategory superCategoryEntity = superCategoryRespository
-				.findBySuperCategoryName(dto.getSuperCategory().getSuperCategoryName());
+		SuperCategory superCategoryEntity = new SuperCategory();
+		BeanUtils.copyProperties(dto.getSuperCategory(), superCategoryEntity);
 		entity.setSuperCategory(superCategoryEntity);
 		log.info("sub category Name::" + dto.getSubCategory().getSubCategoryName());
-		SubCategory subCategory = subCategoryRespository
-				.findBysubCategoryName(dto.getSubCategory().getSubCategoryName());
-		if (subCategory != null) {
-			log.info("Sub categpry::" + subCategory.getSubCategoryId());
-		}
+		SubCategory subCategory = new SubCategory();
+		BeanUtils.copyProperties(dto.getSubCategory(), subCategory);
 		entity.setSubCategory(subCategory);
 		entity = repository.save(entity);
+		log.info("SubCategoryId: " + entity.getSubCategory().getSubCategoryId());
 		BeanUtils.copyProperties(entity, dto);
 		log.info("Saved library" + dto.getServiceId());
 		return dto;
@@ -114,20 +116,12 @@ public class LibraryService {
 					serviceLibrary.getServiceId(), serviceLibrary.getLogoImage()));
 
 		}
-//		target = list.stream()
-//				.map(e -> new ServiceLibraryDto(null, null, e.getServiceName(), e.getTypeOfService(),
-//						e.isServiceDecommisioned(), e.getServiceDescription(), e.getCreationDate(), e.getServiceId()))
-//				.collect(Collectors.toList());
-		// BeanUtils.copyProperties(list, target);
 		return target;
 	}
 
 	public ServiceLibraryDto updateService(ServiceLibraryDto dto) {
 
 		ServiceLibrary library = new ServiceLibrary();
-//		if (dto.getServiceName() != null)
-//			library = repository.findByServiceName(dto.getServiceName())
-//					.orElseThrow(() -> new ResourceNotFound("Resource not found for name: " + dto.getServiceName()));
 		if (dto.getServiceId() != null)
 			library = repository.findById(dto.getServiceId())
 					.orElseThrow(() -> new ResourceNotFound("Resource not found for name: " + dto.getServiceId()));
@@ -167,7 +161,22 @@ public class LibraryService {
 					serviceLibrary.getServiceId(), serviceLibrary.getLogoImage()));
 
 		}
-		//BeanUtils.copyProperties(libraries, target);
+		return target;
+	}
+
+	public List<ServiceLibraryDto> getServiceBySubCategoryId(Long id) {
+		SubCategory subCategory = subCategoryRespository.findById(id)
+				.orElseThrow(() -> new ResourceNotFound("Resource not found id: " + id));
+		List<ServiceLibrary> libraries = subCategory.getLibraries();
+		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
+		BeanUtils.copyProperties(subCategory.getSuperCategory(), superCategoryDto);
+		SubCategoryDto subCategoryDto = new SubCategoryDto();
+		BeanUtils.copyProperties(subCategory, subCategoryDto);
+		List<ServiceLibraryDto> target = libraries.stream()
+				.map(e -> new ServiceLibraryDto(superCategoryDto, subCategoryDto, e.getServiceName(),
+						e.getTypeOfService(), e.isServiceDecommisioned(), e.getServiceDescription(),
+						e.getCreationDate(), e.getServiceId(), e.getLogoImage()))
+				.collect(Collectors.toList());
 		return target;
 	}
 
