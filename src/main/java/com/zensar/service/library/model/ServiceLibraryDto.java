@@ -20,7 +20,7 @@ public class ServiceLibraryDto {
 	private SubCategoryDto subCategory;
 	private String serviceName;
 	private String typeOfService;
-	private boolean serviceDecommisioned;
+	private boolean serviceDecommisioned = false;
 	private String serviceDescription;
 	private LocalDateTime creationDate = LocalDateTime.now();
 	private Long serviceId;
