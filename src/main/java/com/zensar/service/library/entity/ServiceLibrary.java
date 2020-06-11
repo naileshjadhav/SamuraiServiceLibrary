@@ -17,12 +17,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "service_library")
+@ToString(exclude = "logoImage")
 public class ServiceLibrary {
 
 	@Column(name = "service_id", length = 10)

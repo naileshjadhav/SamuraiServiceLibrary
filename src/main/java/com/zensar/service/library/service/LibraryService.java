@@ -2,6 +2,7 @@ package com.zensar.service.library.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zensar.service.library.controller.BeanUtilToCopyNonNullProperties;
 import com.zensar.service.library.entity.ServiceLibrary;
 import com.zensar.service.library.entity.SubCategory;
 import com.zensar.service.library.entity.SuperCategory;
@@ -53,34 +55,6 @@ public class LibraryService {
 		return dto;
 	}
 
-//	public ServiceLibraryDto saveServiceLibrary(ServiceLibraryDto dto) {
-//
-//		ServiceLibrary entity = new ServiceLibrary();
-//		BeanUtils.copyProperties(dto, entity);
-//		SuperCategory superCategoryEntity = superCategoryRespository
-//				.findBySuperCategoryName(dto.getSuperCategory().getSuperCategoryName());
-//		entity.setSuperCategory(superCategoryEntity);
-//		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
-//		BeanUtils.copyProperties(superCategoryEntity, superCategoryDto);
-//		log.info("sub category Name::" + dto.getSubCategory().getSubCategoryName());
-//		SubCategory subCategory = subCategoryRespository
-//				.findBysubCategoryName(dto.getSubCategory().getSubCategoryName());
-//		SubCategoryDto subCategoryDto = null;
-//		if (subCategory != null) {
-//			log.info("Sub categpry::" + subCategory.getSubCategoryId());
-//			subCategoryDto = new SubCategoryDto();
-//			BeanUtils.copyProperties(subCategory, subCategoryDto );
-//		}
-//		entity.setSubCategory(subCategory);
-//		entity = repository.save(entity);
-//		log.info("SubCategoryId: "+entity.getSubCategory().getSubCategoryId());
-//		BeanUtils.copyProperties(entity, dto);
-//		dto.setSubCategory(subCategoryDto);
-//		dto.setSuperCategory(superCategoryDto);
-//		log.info("Saved library" + dto.getServiceId());
-//		return dto;
-//	}
-
 	public ServiceLibraryDto saveServiceLibrary(ServiceLibraryDto dto) {
 
 		ServiceLibrary entity = new ServiceLibrary();
@@ -121,11 +95,14 @@ public class LibraryService {
 
 	public ServiceLibraryDto updateService(ServiceLibraryDto dto) {
 
-		ServiceLibrary library = new ServiceLibrary();
-		if (dto.getServiceId() != null)
-			library = repository.findById(dto.getServiceId())
-					.orElseThrow(() -> new ResourceNotFound("Resource not found for name: " + dto.getServiceId()));
-		BeanUtils.copyProperties(dto, library);
+		ServiceLibrary library = repository.findById(dto.getServiceId())
+				.orElseThrow(() -> new ResourceNotFound("Resource not found for id: " + dto.getServiceId()));
+		ServiceLibraryDto target = new ServiceLibraryDto();
+		BeanUtils.copyProperties(library, target);
+		BeanUtilToCopyNonNullProperties<ServiceLibraryDto> util = new BeanUtilToCopyNonNullProperties<ServiceLibraryDto>();
+		ServiceLibraryDto valueObj = util.copyNonNullProperties(target, dto);
+		BeanUtils.copyProperties(valueObj, library);
+		log.info("Entity to save: {}", library.toString());
 		library = repository.save(library);
 		SuperCategoryDto superDto = null;
 		SubCategoryDto subDto = null;
@@ -164,10 +141,12 @@ public class LibraryService {
 		return target;
 	}
 
-	public List<ServiceLibraryDto> getServiceBySubCategoryId(Long id) {
-		SubCategory subCategory = subCategoryRespository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound("Resource not found id: " + id));
-		List<ServiceLibrary> libraries = subCategory.getLibraries();
+	public List<ServiceLibraryDto> getEnabledServicesBySubCategoryId(Long subCategoryId) {
+		SubCategory subCategory = subCategoryRespository.findById(subCategoryId)
+				.orElseThrow(() -> new ResourceNotFound("Resource not found id: " + subCategoryId));
+		Predicate<? super ServiceLibrary> predicate = e -> e.isServiceDecommisioned() == false;
+		List<ServiceLibrary> libraries = subCategory.getLibraries().stream().filter(predicate)
+				.collect(Collectors.toList());
 		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
 		BeanUtils.copyProperties(subCategory.getSuperCategory(), superCategoryDto);
 		SubCategoryDto subCategoryDto = new SubCategoryDto();

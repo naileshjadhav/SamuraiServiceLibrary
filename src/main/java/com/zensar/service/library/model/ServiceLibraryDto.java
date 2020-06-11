@@ -7,12 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+@ToString(exclude = "logoImage")
 public class ServiceLibraryDto {
 
 	private SuperCategoryDto superCategory;

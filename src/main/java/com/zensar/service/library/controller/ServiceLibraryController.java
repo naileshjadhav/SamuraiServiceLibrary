@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class ServiceLibraryController {
 	@Autowired
 	private SuperCategoryService superCategoryService;
 	@Autowired
-	private SubCategoryService subCategoryService ;
+	private SubCategoryService subCategoryService;
 	private static final Logger log = LoggerFactory.getLogger(ServiceLibraryController.class);
 
 	@GetMapping(value = "/library/{id}", name = "libraryById", path = "/library/{id}")
@@ -52,10 +53,10 @@ public class ServiceLibraryController {
 	}
 
 	@GetMapping(value = "/service")
-	public ResponseEntity<List<ServiceLibraryDto>> getServiceLibraryBySuperCategoryId(
+	public ResponseEntity<List<ServiceLibraryDto>> getEnabledServiceLibraryBySubCategoryId(
 			@RequestParam(value = "id") Long id) {
-		log.info("Get service library by super category id: " + id);
-		List<ServiceLibraryDto> dtos = libraryService.getServiceBySubCategoryId(id);
+		log.info("Get service library by subcategory id: " + id);
+		List<ServiceLibraryDto> dtos = libraryService.getEnabledServicesBySubCategoryId(id);
 		return new ResponseEntity<List<ServiceLibraryDto>>(dtos, HttpStatus.OK);
 	}
 
@@ -72,20 +73,18 @@ public class ServiceLibraryController {
 			@RequestParam(value = "superCategoryName") String superCategoryName,
 			@RequestParam(value = "subCategoryName") String subCategoryName,
 			@RequestParam(value = "serviceName") String serviceName,
-			@RequestParam(value = "typeOfService") String typeOfService,
-			@RequestParam(value = "serviceDecommisioned") boolean serviceDecommisioned) throws IOException {
+			@RequestParam(value = "typeOfService") String typeOfService) throws IOException {
 		log.info("Saving service library.....");
 		ServiceLibraryDto dto = new ServiceLibraryDto();
-		dto.setServiceDecommisioned(serviceDecommisioned);
 		dto.setServiceDescription(serviceDescription);
 		dto.setServiceName(serviceName);
-		log.info("subCategoryName:: "+subCategoryName);
+		log.info("subCategoryName:: " + subCategoryName);
 		SubCategoryDto subCategoryDto = subCategoryService.findSubCategoryByName(subCategoryName);
-		log.info("subCategoryId:: "+subCategoryDto.getSubCategoryId());
+		log.info("subCategoryId:: " + subCategoryDto.getSubCategoryId());
 		dto.setSubCategory(subCategoryDto);
-		log.info("superCategoryName:: "+superCategoryName);
+		log.info("superCategoryName:: " + superCategoryName);
 		SuperCategoryDto superCategoryDto = superCategoryService.findSuperCategoryByName(superCategoryName);
-		log.info("superCategoryId:: "+subCategoryDto.getSubCategoryId());
+		log.info("superCategoryId:: " + subCategoryDto.getSubCategoryId());
 		dto.setSuperCategory(superCategoryDto);
 		dto.setTypeOfService(typeOfService);
 		log.info("Save service library::" + dto.toString() + " image: " + image.getBytes());
@@ -97,7 +96,7 @@ public class ServiceLibraryController {
 	}
 
 	@PutMapping(value = "/library")
-	public ResponseEntity<ServiceLibraryDto> updateService(ServiceLibraryDto dto) throws IOException {
+	public ResponseEntity<ServiceLibraryDto> updateService(@RequestBody ServiceLibraryDto dto) throws IOException {
 		log.info("Updating Service..");
 		dto = libraryService.updateService(dto);
 		log.info("Updating Service finished..");
