@@ -33,3 +33,14 @@ CREATE TABLE if not exists `service_library` (
   CONSTRAINT `FK7sf2foa8jud339f477himo4gf` FOREIGN KEY (`super_category_id`) REFERENCES `super_category` (`super_category_id`),
   CONSTRAINT `FKbgly3u1kwjlcuicyo18d1xvlb` FOREIGN KEY (`sub_category_id`) REFERENCES `sub_category` (`sub_category_id`)
 ) ;
+CREATE TABLE if not exists `service_instance` (
+  `service_instance_id` bigint NOT NULL AUTO_INCREMENT,
+  `is_decomissioned` bit(1) DEFAULT b'0',
+  `is_inactive` bit(1) DEFAULT b'0',
+  `service_instance_name` varchar(50) DEFAULT NULL,
+  `service_id` bigint NOT NULL,
+  PRIMARY KEY (`service_instance_id`),
+  KEY `FKr85y8y4qouj9ujlvcoacl56gq` (`service_id`),
+  CONSTRAINT `FKr85y8y4qouj9ujlvcoacl56gq` FOREIGN KEY (`service_id`) REFERENCES `service_library` (`service_id`)
+) ;
+

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +33,19 @@ public class SuperCategoryController {
 		SuperCategoryDto dto = superCategoryService.getSuperCategoryById(id);
 		return new ResponseEntity<SuperCategoryDto>(dto, HttpStatus.OK);
 	}
-	
+
+	@GetMapping("/categoryOne")
+	public ResponseEntity<SuperCategoryDto> getDefaultSupercategoryOneById() {
+		SuperCategoryDto dto = superCategoryService.getSuperCategoryById(1L);
+		return new ResponseEntity<SuperCategoryDto>(dto, HttpStatus.OK);
+	}
+
+	@GetMapping("/categoryTwo")
+	public ResponseEntity<SuperCategoryDto> getDefaultSupercategoryTwoById() {
+		SuperCategoryDto dto = superCategoryService.getSuperCategoryById(2L);
+		return new ResponseEntity<SuperCategoryDto>(dto, HttpStatus.OK);
+	}
+
 	@GetMapping("/category")
 	public ResponseEntity<List<SuperCategoryDto>> getAllSupercategory() {
 		log.info("Get all category::");
@@ -45,6 +58,13 @@ public class SuperCategoryController {
 		log.info("Save super category::" + dto.getSuperCategoryName());
 		dto.setCreationDate(LocalDateTime.now());
 		dto = superCategoryService.saveSuperCategory(dto);
+		return new ResponseEntity<SuperCategoryDto>(dto, HttpStatus.OK);
+	}
+	
+	@PutMapping("/category")
+	public ResponseEntity<SuperCategoryDto> updateSuperCategory(@RequestBody SuperCategoryDto dto) {
+		log.info("Save super category::" + dto.getSuperCategoryName());
+		dto = superCategoryService.updateSuperCategory(dto);
 		return new ResponseEntity<SuperCategoryDto>(dto, HttpStatus.OK);
 	}
 }

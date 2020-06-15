@@ -11,7 +11,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zensar.service.library.controller.BeanUtilToCopyNonNullProperties;
 import com.zensar.service.library.entity.ServiceLibrary;
 import com.zensar.service.library.entity.SubCategory;
 import com.zensar.service.library.entity.SuperCategory;
@@ -22,6 +21,7 @@ import com.zensar.service.library.model.SuperCategoryDto;
 import com.zensar.service.library.repository.ServiceLibraryRespository;
 import com.zensar.service.library.repository.SubCategoryRespository;
 import com.zensar.service.library.repository.SuperCategoryRespository;
+import com.zensar.service.library.util.BeanUtilToCopyNonNullProperties;
 
 @Service
 public class LibraryService {

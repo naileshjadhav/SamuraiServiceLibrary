@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +23,5 @@ public class SubCategoryDto {
 	private boolean subCategoryEnable;
 	private LocalDateTime creationDate=LocalDateTime.now();
 	private SuperCategoryDto superCategories;
-	@JsonIgnore
 	private List<ServiceLibraryDto> library = new ArrayList<ServiceLibraryDto>();
 }

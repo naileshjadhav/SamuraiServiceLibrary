@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import com.zensar.service.library.entity.SubCategory;
 import com.zensar.service.library.entity.SuperCategory;
 import com.zensar.service.library.exception.ResourceNotFound;
+import com.zensar.service.library.model.SubCategoryDto;
 import com.zensar.service.library.model.SuperCategoryDto;
 import com.zensar.service.library.repository.SuperCategoryRespository;
+import com.zensar.service.library.util.BeanUtilToCopyNonNullProperties;
 
 @Service
 public class SuperCategoryService {
@@ -31,7 +33,12 @@ public class SuperCategoryService {
 		SuperCategory category = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for super categoryId::" + id));
 		SuperCategoryDto dto = new SuperCategoryDto();
+		List<SubCategory> subCategories = category.getSubCategory();
+		List<SubCategoryDto> subCategoriesDto = subCategories.stream().map(e -> new SubCategoryDto(e.getSubCategoryId(),
+				e.getSubCategoryName(), e.isSubCategoryEnable(), e.getCreationDate(), null, null))
+				.collect(Collectors.toList());
 		BeanUtils.copyProperties(category, dto);
+		dto.setSubCategories(subCategoriesDto);
 		return dto;
 	}
 
@@ -78,6 +85,20 @@ public class SuperCategoryService {
 		target = list.stream().map(e -> new SuperCategoryDto(e.getSuperCategoryId(), e.getSuperCategoryName(),
 				e.isSuperCategoryEnable(), e.getCreationDate(), null, null)).collect(Collectors.toList());
 		return target;
+	}
+
+	public SuperCategoryDto updateSuperCategory(SuperCategoryDto dto) {
+		Long id = dto.getSuperCategoryId();
+		SuperCategory superCategory = repository.findById(dto.getSuperCategoryId())
+				.orElseThrow(() -> new ResourceNotFound("Resource not found for super category id: " + id));
+		SuperCategoryDto target = new SuperCategoryDto();
+		BeanUtils.copyProperties(superCategory, target);
+		BeanUtilToCopyNonNullProperties<SuperCategoryDto> util = new BeanUtilToCopyNonNullProperties<SuperCategoryDto>();
+		SuperCategoryDto valueObj = util.copyNonNullProperties(target, dto);
+		BeanUtils.copyProperties(valueObj, superCategory);
+		superCategory = repository.save(superCategory);
+		BeanUtils.copyProperties(superCategory, dto);
+		return dto;
 	}
 
 }

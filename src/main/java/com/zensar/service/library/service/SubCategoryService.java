@@ -10,13 +10,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zensar.service.library.entity.ServiceLibrary;
 import com.zensar.service.library.entity.SubCategory;
 import com.zensar.service.library.entity.SuperCategory;
 import com.zensar.service.library.exception.ResourceNotFound;
+import com.zensar.service.library.model.ServiceLibraryDto;
 import com.zensar.service.library.model.SubCategoryDto;
 import com.zensar.service.library.model.SuperCategoryDto;
 import com.zensar.service.library.repository.SubCategoryRespository;
 import com.zensar.service.library.repository.SuperCategoryRespository;
+import com.zensar.service.library.util.BeanUtilToCopyNonNullProperties;
 
 @Service
 public class SubCategoryService {
@@ -40,7 +43,14 @@ public class SubCategoryService {
 		SubCategory category = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for sub categoryId::" + id));
 		SubCategoryDto dto = new SubCategoryDto();
+		List<ServiceLibrary> libraries = category.getLibraries();
+		List<ServiceLibraryDto> librariesDto = libraries.stream()
+				.map(e -> new ServiceLibraryDto(null, null, e.getServiceName(), e.getTypeOfService(),
+						e.isServiceDecommisioned(), e.getServiceDescription(), e.getCreationDate(), e.getServiceId(),
+						null))
+				.collect(Collectors.toList());
 		BeanUtils.copyProperties(category, dto);
+		dto.setLibrary(librariesDto);
 		return dto;
 	}
 
@@ -81,6 +91,20 @@ public class SubCategoryService {
 						e.isSubCategoryEnable(), e.getCreationDate(), superCategoryDto, null))
 				.collect(Collectors.toList());
 		return target;
+	}
+
+	public SubCategoryDto updateSubCategory(SubCategoryDto dto) {
+		Long id = dto.getSubCategoryId();
+		SubCategory subCategory = repository.findById(dto.getSubCategoryId())
+				.orElseThrow(() -> new ResourceNotFound("Resource not found for sub category id: " + id));
+		SubCategoryDto target = new SubCategoryDto();
+		BeanUtils.copyProperties(subCategory, target);
+		BeanUtilToCopyNonNullProperties<SubCategoryDto> util = new BeanUtilToCopyNonNullProperties<SubCategoryDto>();
+		SubCategoryDto valueObj = util.copyNonNullProperties(target, dto);
+		BeanUtils.copyProperties(valueObj, subCategory);
+		subCategory = repository.save(subCategory);
+		BeanUtils.copyProperties(subCategory, dto);
+		return dto;
 	}
 
 }
