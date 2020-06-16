@@ -62,35 +62,42 @@ public class LibraryService {
 		SuperCategory superCategoryEntity = new SuperCategory();
 		BeanUtils.copyProperties(dto.getSuperCategory(), superCategoryEntity);
 		entity.setSuperCategory(superCategoryEntity);
-		log.info("sub category Name::" + dto.getSubCategory().getSubCategoryName());
 		SubCategory subCategory = new SubCategory();
 		BeanUtils.copyProperties(dto.getSubCategory(), subCategory);
 		entity.setSubCategory(subCategory);
 		entity = repository.save(entity);
-		log.info("SubCategoryId: " + entity.getSubCategory().getSubCategoryId());
 		BeanUtils.copyProperties(entity, dto);
 		log.info("Saved library" + dto.getServiceId());
 		return dto;
 	}
 
-	public List<ServiceLibraryDto> getServiceLibrary() {
+	public List<ServiceLibraryDto> getAllEnabledServiceLibrary() {
 		List<ServiceLibraryDto> target = new ArrayList<ServiceLibraryDto>();
 		List<ServiceLibrary> libraries = (List<ServiceLibrary>) repository.findAll();
-
-		for (ServiceLibrary serviceLibrary : libraries) {
-			SuperCategoryDto superCategoryDto = new SuperCategoryDto();
-			if (serviceLibrary.getSuperCategory() != null)
-				BeanUtils.copyProperties(serviceLibrary.getSuperCategory(), superCategoryDto);
-			SubCategoryDto subCategoryDto = new SubCategoryDto();
-			if (serviceLibrary != null && serviceLibrary.getSubCategory() != null)
-				BeanUtils.copyProperties(serviceLibrary.getSubCategory(), subCategoryDto);
-			target.add(new ServiceLibraryDto(superCategoryDto, subCategoryDto, serviceLibrary.getServiceName(),
-					serviceLibrary.getTypeOfService(), serviceLibrary.isServiceDecommisioned(),
-					serviceLibrary.getServiceDescription(), serviceLibrary.getCreationDate(),
-					serviceLibrary.getServiceId(), serviceLibrary.getLogoImage()));
-
-		}
+		listOfServiceLibraryByUsingListOfEntity(target, libraries);
 		return target;
+	}
+
+	/**
+	 * @param target as List<ServiceLibraryDto>
+	 * @param libraries as List<ServiceLibrary>
+	 */
+	private void listOfServiceLibraryByUsingListOfEntity(List<ServiceLibraryDto> target,
+			List<ServiceLibrary> libraries) {
+		for (ServiceLibrary serviceLibrary : libraries) {
+			if (serviceLibrary.isServiceDecommisioned() == false) {
+				SuperCategoryDto superCategoryDto = new SuperCategoryDto();
+				if (serviceLibrary.getSuperCategory() != null)
+					BeanUtils.copyProperties(serviceLibrary.getSuperCategory(), superCategoryDto);
+				SubCategoryDto subCategoryDto = new SubCategoryDto();
+				if (serviceLibrary.getSubCategory() != null)
+					BeanUtils.copyProperties(serviceLibrary.getSubCategory(), subCategoryDto);
+				target.add(new ServiceLibraryDto(superCategoryDto, subCategoryDto, serviceLibrary.getServiceName(),
+						serviceLibrary.getTypeOfService(), serviceLibrary.isServiceDecommisioned(),
+						serviceLibrary.getServiceDescription(), serviceLibrary.getCreationDate(),
+						serviceLibrary.getServiceId(), serviceLibrary.getLogoImage()));
+			}
+		}
 	}
 
 	public ServiceLibraryDto updateService(ServiceLibraryDto dto) {
@@ -125,19 +132,7 @@ public class LibraryService {
 		List<ServiceLibrary> libraries = repository.findAllByServiceName(name)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for name: " + name));
 
-		for (ServiceLibrary serviceLibrary : libraries) {
-			SuperCategoryDto superCategoryDto = new SuperCategoryDto();
-			if (serviceLibrary.getSuperCategory() != null)
-				BeanUtils.copyProperties(serviceLibrary.getSuperCategory(), superCategoryDto);
-			SubCategoryDto subCategoryDto = new SubCategoryDto();
-			if (serviceLibrary != null && serviceLibrary.getSubCategory() != null)
-				BeanUtils.copyProperties(serviceLibrary.getSubCategory(), subCategoryDto);
-			target.add(new ServiceLibraryDto(superCategoryDto, subCategoryDto, serviceLibrary.getServiceName(),
-					serviceLibrary.getTypeOfService(), serviceLibrary.isServiceDecommisioned(),
-					serviceLibrary.getServiceDescription(), serviceLibrary.getCreationDate(),
-					serviceLibrary.getServiceId(), serviceLibrary.getLogoImage()));
-
-		}
+		listOfServiceLibraryByUsingListOfEntity(target, libraries);
 		return target;
 	}
 
@@ -147,15 +142,17 @@ public class LibraryService {
 		Predicate<? super ServiceLibrary> predicate = e -> e.isServiceDecommisioned() == false;
 		List<ServiceLibrary> libraries = subCategory.getLibraries().stream().filter(predicate)
 				.collect(Collectors.toList());
-		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
-		BeanUtils.copyProperties(subCategory.getSuperCategory(), superCategoryDto);
-		SubCategoryDto subCategoryDto = new SubCategoryDto();
-		BeanUtils.copyProperties(subCategory, subCategoryDto);
-		List<ServiceLibraryDto> target = libraries.stream()
-				.map(e -> new ServiceLibraryDto(superCategoryDto, subCategoryDto, e.getServiceName(),
-						e.getTypeOfService(), e.isServiceDecommisioned(), e.getServiceDescription(),
-						e.getCreationDate(), e.getServiceId(), e.getLogoImage()))
-				.collect(Collectors.toList());
+//		SuperCategoryDto superCategoryDto = new SuperCategoryDto();
+//		BeanUtils.copyProperties(subCategory.getSuperCategory(), superCategoryDto);
+//		SubCategoryDto subCategoryDto = new SubCategoryDto();
+//		BeanUtils.copyProperties(subCategory, subCategoryDto);
+//		List<ServiceLibraryDto> target = libraries.stream()
+//				.map(e -> new ServiceLibraryDto(superCategoryDto, subCategoryDto, e.getServiceName(),
+//						e.getTypeOfService(), e.isServiceDecommisioned(), e.getServiceDescription(),
+//						e.getCreationDate(), e.getServiceId(), e.getLogoImage()))
+//				.collect(Collectors.toList());
+		List<ServiceLibraryDto> target = new ArrayList<ServiceLibraryDto>();
+		listOfServiceLibraryByUsingListOfEntity(target, libraries);
 		return target;
 	}
 

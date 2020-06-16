@@ -47,7 +47,7 @@ public class ServiceLibraryController {
 
 	@GetMapping(value = "/service/{name}")
 	public ResponseEntity<List<ServiceLibraryDto>> getServiceLibraryByName(@PathVariable String name) {
-		log.info("Get service library by name: " + name);
+		log.info("Get list service library by name: " + name);
 		List<ServiceLibraryDto> dtos = libraryService.getServiceByName(name);
 		return new ResponseEntity<List<ServiceLibraryDto>>(dtos, HttpStatus.OK);
 	}
@@ -61,9 +61,9 @@ public class ServiceLibraryController {
 	}
 
 	@GetMapping("/library")
-	public ResponseEntity<List<ServiceLibraryDto>> getAllServiceLibrary() {
+	public ResponseEntity<List<ServiceLibraryDto>> getAllEnabledServiceLibrary() {
 		log.info("Get full service library::");
-		List<ServiceLibraryDto> dto = libraryService.getServiceLibrary();
+		List<ServiceLibraryDto> dto = libraryService.getAllEnabledServiceLibrary();
 		return new ResponseEntity<List<ServiceLibraryDto>>(dto, HttpStatus.OK);
 	}
 

@@ -11,7 +11,7 @@ import com.zensar.service.library.entity.ServiceLibrary;
 @Repository
 public interface ServiceLibraryRespository extends CrudRepository<ServiceLibrary, Long> {
 
-	Optional<ServiceLibrary> findByServiceName(String serviceName);
+	//Optional<ServiceLibrary> findByServiceName(String serviceName);
 
 	Optional<List<ServiceLibrary>> findAllByServiceName(String name);
 

@@ -1,5 +1,7 @@
 package com.zensar.service.library.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +30,7 @@ public class SamuraiServiceInstanceService {
 	public SamuraiServiceInstanceDto createServiceInstance(SamuraiServiceInstanceDto dto) {
 		log.info("Start createServiceInstance..");
 		String serviceName = dto.getServiceName();
-		ServiceLibrary library = libraryRespository.findByServiceName(dto.getServiceName())
+		List<ServiceLibrary> library = libraryRespository.findAllByServiceName(dto.getServiceName())
 				.orElseThrow((() -> new ResourceNotFound("Resource not found service name: " + serviceName)));
 		ServiceInstance entity = new ServiceInstance();
 		// BeanUtilToCopyNonNullProperties copyNonNullProperties = new
@@ -38,7 +40,7 @@ public class SamuraiServiceInstanceService {
 		// entity);
 		BeanUtils.copyProperties(dto, entity);
 		log.info("entity: {}", entity);
-		entity.setServiceLibrary(library);
+		entity.setServiceLibrary(library.stream().filter(e -> e.isServiceDecommisioned() == false).findFirst().get());
 		entity = instanceRepository.save(entity);
 		// dto = (SamuraiServiceInstanceDto)
 		// copyNonNullProperties.copyNonNullProperties(entity,dto);
@@ -50,7 +52,7 @@ public class SamuraiServiceInstanceService {
 	public SamuraiServiceInstanceDto updateServiceInstance(SamuraiServiceInstanceDto dto) {
 		log.info("Start updateServiceInstance..");
 		String serviceName = dto.getServiceName();
-		ServiceLibrary library = libraryRespository.findByServiceName(dto.getServiceName())
+		List<ServiceLibrary> library = libraryRespository.findAllByServiceName(dto.getServiceName())
 				.orElseThrow((() -> new ResourceNotFound("Resource not found service name: " + serviceName)));
 		String instanceName = dto.getServiceInstanceName();
 		ServiceInstance entity = instanceRepository.findByServiceInstanceName(dto.getServiceInstanceName())
@@ -62,7 +64,7 @@ public class SamuraiServiceInstanceService {
 		SamuraiServiceInstanceDto copied = copyNonNullProperties.copyNonNullProperties(target, dto);
 		BeanUtils.copyProperties(copied, entity);
 		log.info("entity: {}", entity);
-		entity.setServiceLibrary(library);
+		entity.setServiceLibrary(library.stream().filter(e -> e.isServiceDecommisioned() == false).findFirst().get());
 		entity = instanceRepository.save(entity);
 		BeanUtils.copyProperties(entity, dto);
 		log.info("Finish updateServiceInstance..");
@@ -78,12 +80,12 @@ public class SamuraiServiceInstanceService {
 		ServiceLibrary library = instance.getServiceLibrary();
 		ServiceLibraryDto serviceLibrary = new ServiceLibraryDto();
 		BeanUtils.copyProperties(library, serviceLibrary);
-		//ObjectMapper mapper = new ObjectMapper();
-		//SamuraiServiceInstanceDto target = mapper.convertValue(instance, SamuraiServiceInstanceDto.class);
+		// ObjectMapper mapper = new ObjectMapper();
+		// SamuraiServiceInstanceDto target = mapper.convertValue(instance,
+		// SamuraiServiceInstanceDto.class);
 		target.setServiceLibrary(serviceLibrary);
 		log.info("End getServiceInstanceByName..");
 		return target;
 	}
 
-	
 }
