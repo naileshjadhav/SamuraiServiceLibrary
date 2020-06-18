@@ -46,9 +46,9 @@ public class ServiceLibraryController {
 	}
 
 	@GetMapping(value = "/service/{name}")
-	public ResponseEntity<List<ServiceLibraryDto>> getServiceLibraryByName(@PathVariable String name) {
+	public ResponseEntity<List<ServiceLibraryDto>> getEnabledServiceLibraryByName(@PathVariable String name) {
 		log.info("Get list service library by name: " + name);
-		List<ServiceLibraryDto> dtos = libraryService.getServiceByName(name);
+		List<ServiceLibraryDto> dtos = libraryService.getEnabledServiceListByName(name);
 		return new ResponseEntity<List<ServiceLibraryDto>>(dtos, HttpStatus.OK);
 	}
 
@@ -68,7 +68,7 @@ public class ServiceLibraryController {
 	}
 
 	@PostMapping(value = "/library", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<ServiceLibraryDto> serviceLibrary(@RequestParam(value = "logoImage") MultipartFile image,
+	public ResponseEntity<ServiceLibraryDto> createServiceLibrary(@RequestParam(value = "logoImage") MultipartFile image,
 			@RequestParam(value = "serviceDescription") String serviceDescription,
 			@RequestParam(value = "superCategoryName") String superCategoryName,
 			@RequestParam(value = "subCategoryName") String subCategoryName,
@@ -87,11 +87,10 @@ public class ServiceLibraryController {
 		log.info("superCategoryId:: " + subCategoryDto.getSubCategoryId());
 		dto.setSuperCategory(superCategoryDto);
 		dto.setTypeOfService(typeOfService);
-		log.info("Save service library::" + dto.toString() + " image: " + image.getBytes());
 		dto.setLogoImage(image.getBytes());
 		dto = libraryService.saveServiceLibrary(dto);
 		dto.setLogoImage(dto.getLogoImage());
-		log.info("Saved service library finished...");
+		log.info("Save service library finished...");
 		return new ResponseEntity<ServiceLibraryDto>(dto, HttpStatus.OK);
 	}
 

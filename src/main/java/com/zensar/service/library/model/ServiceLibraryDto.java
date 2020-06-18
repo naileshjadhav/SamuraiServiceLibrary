@@ -16,6 +16,7 @@ import lombok.ToString;
 @ToString(exclude = "logoImage")
 public class ServiceLibraryDto {
 
+	//private ServiceInstanceDto instanceDto;
 	private SuperCategoryDto superCategory;
 	private SubCategoryDto subCategory;
 	private String serviceName;

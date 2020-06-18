@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zensar.service.library.model.SamuraiServiceInstanceDto;
+import com.zensar.service.library.model.ServiceInstanceDto;
 import com.zensar.service.library.service.SamuraiServiceInstanceService;
 
 @RestController
@@ -25,29 +25,29 @@ public class SamuraiServiceInstanceController {
 	private SamuraiServiceInstanceService service;
 
 	@PostMapping(value = "/instance")
-	public ResponseEntity<SamuraiServiceInstanceDto> createSamuraiServiceInstance(
-			@RequestBody SamuraiServiceInstanceDto dto) {
+	public ResponseEntity<ServiceInstanceDto> createSamuraiServiceInstance(
+			@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting createSamuraiServiceInstance....");
 		dto = this.service.createServiceInstance(dto);
 		log.info("End createSamuraiServiceInstance....");
-		return new ResponseEntity<SamuraiServiceInstanceDto>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/instance")
-	public ResponseEntity<SamuraiServiceInstanceDto> updateSamuraiServiceInstance(
-			@RequestBody SamuraiServiceInstanceDto dto) {
+	public ResponseEntity<ServiceInstanceDto> updateSamuraiServiceInstance(
+			@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting updateSamuraiServiceInstance....");
 		dto = this.service.updateServiceInstance(dto);
 		log.info("End updateSamuraiServiceInstance....");
-		return new ResponseEntity<SamuraiServiceInstanceDto>(dto, HttpStatus.OK);
+		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "instance/{name}")
-	public ResponseEntity<SamuraiServiceInstanceDto> getServiceInstanceByName(@PathVariable String name) {
+	public ResponseEntity<ServiceInstanceDto> getServiceInstanceByName(@PathVariable String name) {
 		log.info("Starting getServiceInstanceByName....");
-		SamuraiServiceInstanceDto dto = this.service.getServiceInstanceByName(name);
+		ServiceInstanceDto dto = this.service.getServiceInstanceByName(name);
 		log.info("Starting getServiceInstanceByName....");
-		return new ResponseEntity<SamuraiServiceInstanceDto>(dto, HttpStatus.OK);
+		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 
 }

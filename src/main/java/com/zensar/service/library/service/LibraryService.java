@@ -39,19 +39,21 @@ public class LibraryService {
 		ServiceLibrary library = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for serviceId::" + id));
 		ServiceLibraryDto dto = new ServiceLibraryDto();
-		SuperCategoryDto superDto = null;
-		SubCategoryDto subDto = null;
-		if (library.getSuperCategory() != null) {
-			superDto = new SuperCategoryDto();
-			BeanUtils.copyProperties(library.getSuperCategory(), superDto);
+		if (library.isServiceDecommisioned() == false) {
+			SuperCategoryDto superDto = null;
+			SubCategoryDto subDto = null;
+			if (library.getSuperCategory() != null) {
+				superDto = new SuperCategoryDto();
+				BeanUtils.copyProperties(library.getSuperCategory(), superDto);
+			}
+			if (library.getSubCategory() != null) {
+				subDto = new SubCategoryDto();
+				BeanUtils.copyProperties(library.getSubCategory(), subDto);
+			}
+			dto.setSuperCategory(superDto);
+			dto.setSubCategory(subDto);
+			BeanUtils.copyProperties(library, dto);
 		}
-		if (library.getSubCategory() != null) {
-			subDto = new SubCategoryDto();
-			BeanUtils.copyProperties(library.getSubCategory(), subDto);
-		}
-		dto.setSuperCategory(superDto);
-		dto.setSubCategory(subDto);
-		BeanUtils.copyProperties(library, dto);
 		return dto;
 	}
 
@@ -79,7 +81,7 @@ public class LibraryService {
 	}
 
 	/**
-	 * @param target as List<ServiceLibraryDto>
+	 * @param target    as List<ServiceLibraryDto>
 	 * @param libraries as List<ServiceLibrary>
 	 */
 	private void listOfServiceLibraryByUsingListOfEntity(List<ServiceLibraryDto> target,
@@ -127,11 +129,10 @@ public class LibraryService {
 		return dto;
 	}
 
-	public List<ServiceLibraryDto> getServiceByName(String name) {
+	public List<ServiceLibraryDto> getEnabledServiceListByName(String name) {
 		List<ServiceLibraryDto> target = new ArrayList<ServiceLibraryDto>();
 		List<ServiceLibrary> libraries = repository.findAllByServiceName(name)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for name: " + name));
-
 		listOfServiceLibraryByUsingListOfEntity(target, libraries);
 		return target;
 	}
