@@ -55,5 +55,5 @@ CREATE TABLE IF NOT EXISTS `service_library_instance` (
   KEY `FKkqqkj3tpml7jkpqcyx2ec9mgk` (`service_instance_id`),
   CONSTRAINT `FK8hfs47y95gfgqs9k9m8isos7f` FOREIGN KEY (`service_id`) REFERENCES `service_library` (`service_id`),
   CONSTRAINT `FKkqqkj3tpml7jkpqcyx2ec9mgk` FOREIGN KEY (`service_instance_id`) REFERENCES `service_instance` (`service_instance_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
