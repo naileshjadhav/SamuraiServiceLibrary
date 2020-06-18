@@ -10,7 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -36,8 +37,8 @@ public class ServiceInstance {
 	private Boolean isInActive;
 
 	@JsonBackReference
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "service_instance_id", insertable = true, updatable = true)
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "service_library_instance", joinColumns = @JoinColumn(name = "service_instance_id"), inverseJoinColumns = @JoinColumn(name = "service_id"))
 	private List<ServiceLibrary> serviceLibrary = new ArrayList<ServiceLibrary>();
 
 	public boolean addServiceLibrary(ServiceLibrary e) {

@@ -1,14 +1,18 @@
 package com.zensar.service.library.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -30,9 +34,12 @@ public class ServiceLibrary {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long serviceId;
 
-	@ManyToOne
-	@JoinColumn(name = "service_instance_id", insertable = true, updatable = true)
-	private ServiceInstance serviceInstance;
+	@ManyToMany(mappedBy = "serviceLibrary",fetch = FetchType.LAZY)
+	private Set<ServiceInstance> serviceInstance = new HashSet<ServiceInstance>();
+
+	public boolean addServiceInstance(ServiceInstance instance) {
+		return serviceInstance.add(instance);
+	}
 
 	@ManyToOne
 	@JoinColumn(name = "super_category_id", insertable = true, updatable = true)
