@@ -4,7 +4,7 @@ use samurai;
 CREATE TABLE if not exists `super_category` (
   `super_category_id` bigint NOT NULL AUTO_INCREMENT,
   `creation_date` datetime(6) DEFAULT NULL,
-  `super_category_enable` bit(1) DEFAULT 0,
+  `super_category_enable` bit(1) DEFAULT b'1',
   `super_category_name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`super_category_id`)
 );
@@ -13,7 +13,7 @@ CREATE TABLE if not exists `super_category` (
 CREATE TABLE if not exists `sub_category` (
   `sub_category_id` bigint NOT NULL AUTO_INCREMENT,
   `creation_date` datetime(6) DEFAULT NULL,
-  `sub_category_enable` bit(1) DEFAULT 0,
+  `sub_category_enable` bit(1) DEFAULT b'1',
   `sub_category_name` varchar(100) DEFAULT NULL,
   `super_category_id` bigint DEFAULT NULL,
   PRIMARY KEY (`sub_category_id`),
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `service_library` (
   `service_id` bigint NOT NULL AUTO_INCREMENT,
   `creation_date` datetime(6) DEFAULT NULL,
   `logo_image` longblob,
-  `service_decommisioned` bit(1) DEFAULT NULL,
+  `service_decommisioned` bit(1) DEFAULT b'0',
   `service_description` varchar(200) DEFAULT NULL,
   `service_name` varchar(100) DEFAULT NULL,
   `type_of_service` varchar(50) DEFAULT NULL,
