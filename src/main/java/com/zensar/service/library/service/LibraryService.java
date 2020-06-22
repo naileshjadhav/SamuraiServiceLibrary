@@ -36,6 +36,7 @@ public class LibraryService {
 	private static final Logger log = LoggerFactory.getLogger(LibraryService.class);
 
 	public ServiceLibraryDto getServiceLibraryById(Long id) {
+		log.info("getServiceLibraryById start.......");
 		ServiceLibrary library = repository.findById(id)
 				.orElseThrow(() -> new ResourceNotFound("Resource not found for serviceId::" + id));
 		ServiceLibraryDto dto = new ServiceLibraryDto();
@@ -54,6 +55,7 @@ public class LibraryService {
 			dto.setSubCategory(subDto);
 			BeanUtils.copyProperties(library, dto);
 		}
+		log.info("getServiceLibraryById end.......");
 		return dto;
 	}
 

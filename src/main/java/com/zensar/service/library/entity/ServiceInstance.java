@@ -13,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,7 +34,6 @@ public class ServiceInstance {
 	@Column(name = "is_inactive", columnDefinition = "bit default false")
 	private Boolean isInActive;
 
-	@JsonBackReference
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "service_library_instance", joinColumns = @JoinColumn(name = "service_instance_id"), inverseJoinColumns = @JoinColumn(name = "service_id"))
 	private List<ServiceLibrary> serviceLibrary = new ArrayList<ServiceLibrary>();

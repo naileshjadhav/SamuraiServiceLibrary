@@ -35,6 +35,7 @@ public class ServiceLibrary {
 	private Long serviceId;
 
 	@ManyToMany(mappedBy = "serviceLibrary",fetch = FetchType.LAZY)
+	@JsonBackReference
 	private Set<ServiceInstance> serviceInstance = new HashSet<ServiceInstance>();
 
 	public boolean addServiceInstance(ServiceInstance instance) {

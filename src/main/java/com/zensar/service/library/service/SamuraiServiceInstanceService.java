@@ -1,6 +1,7 @@
 package com.zensar.service.library.service;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -28,36 +29,74 @@ public class SamuraiServiceInstanceService {
 	@Autowired
 	private ServiceLibraryRespository libraryRespository;
 
+	/*
+	 * public ServiceInstanceDto createServiceInstance(ServiceInstanceDto dto) {
+	 * log.info("Start createServiceInstance.."); List<List<ServiceLibrary>>
+	 * libraryArray = dto.getServiceLibrary().stream() .filter(e ->
+	 * e.isServiceDecommisioned() == false) .map(e ->
+	 * libraryRespository.findAllByServiceName(e.getServiceName()).orElseThrow( ()
+	 * -> new ResourceNotFound("Resource not found for service name: " +
+	 * e.getServiceName()))) .collect(Collectors.toList()); ServiceInstance entity =
+	 * new ServiceInstance(); BeanUtils.copyProperties(dto, entity);
+	 * List<ServiceLibrary> serviceLibrary = libraryArray.stream() .flatMap(e ->
+	 * e.stream() .map(l -> new ServiceLibrary(l.getServiceId(), null,
+	 * l.getSuperCategory(), l.getSubCategory(), l.getServiceName(),
+	 * l.getTypeOfService(), l.isServiceDecommisioned(), l.getServiceDescription(),
+	 * l.getCreationDate(), l.getLogoImage()))) .collect(Collectors.toList());
+	 * entity.setServiceLibrary(serviceLibrary); log.info("entity: {}", entity);
+	 * entity = instanceRepository.save(entity); BeanUtils.copyProperties(entity,
+	 * dto); List<ServiceLibraryDto> target = libraryArray.stream() .flatMap(e ->
+	 * e.stream() .map(l -> new ServiceLibraryDto(null, null, l.getServiceName(),
+	 * l.getTypeOfService(), l.isServiceDecommisioned(), l.getServiceDescription(),
+	 * l.getCreationDate(), l.getServiceId(), l.getLogoImage())))
+	 * .collect(Collectors.toList()); dto.setServiceLibrary(target);
+	 * log.info("Finish createServiceInstance.."); return dto; }
+	 */
+	/**
+	 * @param ServiceInstanceDto
+	 * @return ServiceInstanceDto
+	 */
 	public ServiceInstanceDto createServiceInstance(ServiceInstanceDto dto) {
 		log.info("Start createServiceInstance..");
-		List<List<ServiceLibrary>> libraryArray = dto.getServiceLibrary().stream()
-				.filter(e -> e.isServiceDecommisioned() == false)
-				.map(e -> libraryRespository.findAllByServiceName(e.getServiceName()).orElseThrow(
-						() -> new ResourceNotFound("Resource not found for service name: " + e.getServiceName())))
-				.collect(Collectors.toList());
-		ServiceInstance entity = new ServiceInstance();
-		BeanUtils.copyProperties(dto, entity);
-		List<ServiceLibrary> serviceLibrary = libraryArray.stream()
-				.flatMap(e -> e.stream()
-						.map(l -> new ServiceLibrary(l.getServiceId(), null, l.getSuperCategory(), l.getSubCategory(),
-								l.getServiceName(), l.getTypeOfService(), l.isServiceDecommisioned(),
-								l.getServiceDescription(), l.getCreationDate(), l.getLogoImage())))
-				.collect(Collectors.toList());
-		entity.setServiceLibrary(serviceLibrary);
-		log.info("entity: {}", entity);
-		entity = instanceRepository.save(entity);
-		BeanUtils.copyProperties(entity, dto);
-		List<ServiceLibraryDto> target = libraryArray.stream()
-				.flatMap(e -> e.stream()
-						.map(l -> new ServiceLibraryDto(null, null, l.getServiceName(), l.getTypeOfService(),
-								l.isServiceDecommisioned(), l.getServiceDescription(), l.getCreationDate(),
-								l.getServiceId(), l.getLogoImage())))
-				.collect(Collectors.toList());
-		dto.setServiceLibrary(target);
+
+		// Supplier<? extends ServiceInstance> supplier = () -> getSupplier();
+		Supplier<ServiceInstance> supplier = () -> new ServiceInstance();
+		ServiceInstance instance = instanceRepository.findByServiceInstanceName(dto.getServiceInstanceName()).orElseGet(supplier);
+		if (instance.getServiceInstanceId() == null) {
+			List<List<ServiceLibrary>> libraryArray = dto.getServiceLibrary().stream()
+					.filter(e -> e.isServiceDecommisioned() == false)
+					.map(e -> libraryRespository.findAllByServiceName(e.getServiceName()).orElseThrow(
+							() -> new ResourceNotFound("Resource not found for service name: " + e.getServiceName())))
+					.collect(Collectors.toList());
+			// ServiceInstance entity = new ServiceInstance();
+			BeanUtils.copyProperties(dto, instance);
+			List<ServiceLibrary> serviceLibrary = libraryArray.stream()
+					.flatMap(e -> e.stream().map(l -> new ServiceLibrary(l.getServiceId(), null, l.getSuperCategory(),
+							l.getSubCategory(), l.getServiceName(), l.getTypeOfService(), l.isServiceDecommisioned(),
+							l.getServiceDescription(), l.getCreationDate(), l.getLogoImage())))
+					.collect(Collectors.toList());
+			instance.setServiceLibrary(serviceLibrary);
+			log.info("entity: {}", instance);
+			instance = instanceRepository.save(instance);
+			BeanUtils.copyProperties(instance, dto);
+//			List<ServiceLibraryDto> target = libraryArray.stream()
+//					.flatMap(e -> e.stream()
+//							.map(l -> new ServiceLibraryDto(null, null, l.getServiceName(), l.getTypeOfService(),
+//									l.isServiceDecommisioned(), l.getServiceDescription(), l.getCreationDate(),
+//									l.getServiceId(), l.getLogoImage())))
+//					.collect(Collectors.toList());
+//			dto.setServiceLibrary(target);
+		} else {
+			dto = updateServiceInstance(dto);
+		}
 		log.info("Finish createServiceInstance..");
 		return dto;
 	}
 
+	/**
+	 * @param ServiceInstanceDto
+	 * @return ServiceInstanceDto
+	 */
 	public ServiceInstanceDto updateServiceInstance(ServiceInstanceDto dto) {
 
 		log.info("Start updateServiceInstance..");
@@ -84,53 +123,23 @@ public class SamuraiServiceInstanceService {
 
 			instance.setServiceLibrary(serviceLibrary);
 
-			List<ServiceLibraryDto> libraryDtos = serviceLibrary.stream()
-					.map(l -> new ServiceLibraryDto(null, null, l.getServiceName(), l.getTypeOfService(),
-							l.isServiceDecommisioned(), l.getServiceDescription(), l.getCreationDate(),
-							l.getServiceId(), l.getLogoImage()))
-					.collect(Collectors.toList());
-			instanceDto.setServiceLibrary(libraryDtos);
+//			List<ServiceLibraryDto> libraryDtos = serviceLibrary.stream()
+//					.map(l -> new ServiceLibraryDto(null, null, l.getServiceName(), l.getTypeOfService(),
+//							l.isServiceDecommisioned(), l.getServiceDescription(), l.getCreationDate(),
+//							l.getServiceId(), l.getLogoImage()))
+//					.collect(Collectors.toList());
+//			instanceDto.setServiceLibrary(libraryDtos);
 		}
 		instance = instanceRepository.save(instance);
 		BeanUtils.copyProperties(instance, instanceDto);
 		log.info("Finish updateServiceInstance..");
 		return instanceDto;
-
-//		List<List<ServiceLibrary>> libraryArray = dto.getServiceLibrary().stream()
-//				.filter(e -> e.isServiceDecommisioned() == false)
-//				.map(e -> libraryRespository.findAllByServiceName(e.getServiceName()).orElseThrow(
-//						() -> new ResourceNotFound("Resource not found service name: " + e.getServiceName())))
-//				.collect(Collectors.toList());
-//		List<ServiceLibrary> serviceLibrary = libraryArray.stream()
-//				.flatMap(e -> e.stream()
-//						.map(l -> new ServiceLibrary(l.getServiceId(), null, null, null, l.getServiceName(),
-//								l.getTypeOfService(), l.isServiceDecommisioned(), l.getServiceDescription(),
-//								l.getCreationDate(), l.getLogoImage())))
-//				.collect(Collectors.toList());
-//		String instanceName = dto.getServiceInstanceName();
-//		ServiceInstance entity = instanceRepository.findByServiceInstanceName(dto.getServiceInstanceName())
-//				.orElseThrow(() -> new ResourceNotFound("Resource not found for instance name: " + instanceName));
-//		BeanUtilToCopyNonNullProperties<ServiceInstanceDto> copyNonNullProperties = new BeanUtilToCopyNonNullProperties<ServiceInstanceDto>();
-//		log.info("DTO: {}", dto.toString());
-//		ServiceInstanceDto target = new ServiceInstanceDto();
-//		BeanUtils.copyProperties(entity, target);
-//		ServiceInstanceDto copied = copyNonNullProperties.copyNonNullProperties(target, dto);
-//		BeanUtils.copyProperties(copied, entity);
-//		log.info("entity: {}", entity);
-//		entity.setServiceLibrary(serviceLibrary);
-//		entity = instanceRepository.save(entity);
-//		BeanUtils.copyProperties(entity, dto);
-//		List<ServiceLibraryDto> dtos = libraryArray.stream()
-//				.flatMap(e -> e.stream()
-//						.map(l -> new ServiceLibraryDto(null, null, l.getServiceName(), l.getTypeOfService(),
-//								l.isServiceDecommisioned(), l.getServiceDescription(), l.getCreationDate(),
-//								l.getServiceId(), l.getLogoImage())))
-//				.collect(Collectors.toList());
-//		dto.setServiceLibrary(dtos);
-//		log.info("Finish updateServiceInstance..");
-//		return dto;
 	}
 
+	/**
+	 * @param Instance name
+	 * @return Instance dto
+	 */
 	public ServiceInstanceDto getServiceInstanceByName(String name) {
 		log.info("Start getServiceInstanceByName..");
 		ServiceInstance instance = instanceRepository.findByServiceInstanceName(name)
