@@ -46,7 +46,7 @@ public class SamuraiServiceInstanceController {
 	public ResponseEntity<ServiceInstanceDto> getServiceInstanceByName(@PathVariable String name) {
 		log.info("Starting getServiceInstanceByName....");
 		ServiceInstanceDto dto = this.service.getServiceInstanceByName(name);
-		log.info("Starting getServiceInstanceByName....");
+		log.info("End getServiceInstanceByName....");
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 
