@@ -74,9 +74,9 @@ public class ServiceInstanceControllerTest {
 		// Given
 		ServiceInstanceDto dto = new ServiceInstanceDto(null, "instance1", null, null, null);
 		// When
-		when(mockInstanceService.createServiceInstance(ArgumentMatchers.any(dto.getClass()))).thenCallRealMethod()
+		when(mockInstanceService.createServiceInstance(ArgumentMatchers.any(dto.getClass())))
 				.thenReturn(getServiceInstanceDto());
-		when(mockInstanceRepository.findByServiceInstanceName("instance1")).thenReturn(getServiceInstance());
+		//when(mockInstanceRepository.findByServiceInstanceName("instance1")).thenReturn(getServiceInstance());
 		// Then
 		mvc.perform(MockMvcRequestBuilders.post("/instance").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(dto)))
@@ -90,6 +90,7 @@ public class ServiceInstanceControllerTest {
 		return dto;
 	}
 
+	@SuppressWarnings("unused")
 	private Optional<ServiceInstance> getServiceInstance() {
 		ServiceLibrary library = new ServiceLibrary(11L, null, null, null, "service1", "type1", false, "desc1",
 				LocalDateTime.now(), null);

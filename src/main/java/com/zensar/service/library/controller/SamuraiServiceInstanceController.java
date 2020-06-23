@@ -27,6 +27,10 @@ public class SamuraiServiceInstanceController {
 	@PostMapping(value = "/instance")
 	public ResponseEntity<ServiceInstanceDto> createSamuraiServiceInstance(@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting createSamuraiServiceInstance....");
+		if (dto.getIsDecomissioned() == null)
+			dto.setIsDecomissioned(false);
+		if (dto.getIsInActive() == null)
+			dto.setIsInActive(false);
 		dto = this.service.createServiceInstance(dto);
 		log.info("End createSamuraiServiceInstance....");
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.CREATED);
@@ -35,6 +39,10 @@ public class SamuraiServiceInstanceController {
 	@PutMapping(value = "/instance")
 	public ResponseEntity<ServiceInstanceDto> updateSamuraiServiceInstance(@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting updateSamuraiServiceInstance....");
+		if (dto.getIsDecomissioned() == null)
+			dto.setIsDecomissioned(false);
+		if (dto.getIsInActive() == null)
+			dto.setIsInActive(false);
 		dto = this.service.updateServiceInstance(dto);
 		log.info("End updateSamuraiServiceInstance....");
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
