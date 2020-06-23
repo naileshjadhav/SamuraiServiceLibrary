@@ -7,8 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,8 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zensar.service.library.entity.ServiceInstance;
+import com.zensar.service.library.entity.ServiceLibrary;
 import com.zensar.service.library.model.ServiceInstanceDto;
 import com.zensar.service.library.model.ServiceLibraryDto;
 import com.zensar.service.library.repository.ServiceInstanceRepository;
@@ -40,7 +44,7 @@ public class ServiceInstanceControllerTest {
 	private SamuraiServiceInstanceService spyInstanceService;
 
 	@MockBean
-	private ServiceInstanceRepository instanceRepository;
+	private ServiceInstanceRepository mockInstanceRepository;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -68,19 +72,15 @@ public class ServiceInstanceControllerTest {
 	@Test
 	public void saveServiceInstance() throws Exception {
 		// Given
-		ServiceInstanceDto dto = new ServiceInstanceDto(1L, "instance2", false, false, null);
+		ServiceInstanceDto dto = new ServiceInstanceDto(null, "instance1", null, null, null);
 		// When
-		when(mockInstanceService.createServiceInstance(new ServiceInstanceDto(null, "instance2", null, null, null)))
-				.thenReturn(dto);
+		when(mockInstanceService.createServiceInstance(ArgumentMatchers.any(dto.getClass()))).thenCallRealMethod()
+				.thenReturn(getServiceInstanceDto());
+		when(mockInstanceRepository.findByServiceInstanceName("instance1")).thenReturn(getServiceInstance());
 		// Then
 		mvc.perform(MockMvcRequestBuilders.post("/instance").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(dto)))
-				// .andExpect(content().equals(dto),is(dto));
-				// .andExpect(jsonPath("$.serviceInstanceId",
-				// is(1))).andReturn();//jsonPath("$.accountId").value("12345")
 				.andExpect(jsonPath("$.serviceInstanceId").value("1"));
-
-		// JSONAssert.assertEquals(dto, response.getBody(), false);
 	}
 
 	private ServiceInstanceDto getServiceInstanceDto() {
@@ -88,5 +88,12 @@ public class ServiceInstanceControllerTest {
 				LocalDateTime.now(), 1L, null);
 		ServiceInstanceDto dto = new ServiceInstanceDto(1L, "instance1", false, false, Arrays.asList(library));
 		return dto;
+	}
+
+	private Optional<ServiceInstance> getServiceInstance() {
+		ServiceLibrary library = new ServiceLibrary(11L, null, null, null, "service1", "type1", false, "desc1",
+				LocalDateTime.now(), null);
+		ServiceInstance instance = new ServiceInstance(1L, "instance1", false, false, Arrays.asList(library));
+		return Optional.of(instance);
 	}
 }

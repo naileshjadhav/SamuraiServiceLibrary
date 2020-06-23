@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zensar.service.library.model.ServiceInstanceDto;
@@ -25,8 +26,7 @@ public class SamuraiServiceInstanceController {
 	private SamuraiServiceInstanceService service;
 
 	@PostMapping(value = "/instance")
-	public ResponseEntity<ServiceInstanceDto> createSamuraiServiceInstance(
-			@RequestBody ServiceInstanceDto dto) {
+	public ResponseEntity<ServiceInstanceDto> createSamuraiServiceInstance(@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting createSamuraiServiceInstance....");
 		dto = this.service.createServiceInstance(dto);
 		log.info("End createSamuraiServiceInstance....");
@@ -34,19 +34,27 @@ public class SamuraiServiceInstanceController {
 	}
 
 	@PutMapping(value = "/instance")
-	public ResponseEntity<ServiceInstanceDto> updateSamuraiServiceInstance(
-			@RequestBody ServiceInstanceDto dto) {
+	public ResponseEntity<ServiceInstanceDto> updateSamuraiServiceInstance(@RequestBody ServiceInstanceDto dto) {
 		log.info("Starting updateSamuraiServiceInstance....");
 		dto = this.service.updateServiceInstance(dto);
 		log.info("End updateSamuraiServiceInstance....");
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "instance/{name}")
+	@GetMapping(value = "/instance/{name}")
 	public ResponseEntity<ServiceInstanceDto> getServiceInstanceByName(@PathVariable String name) {
 		log.info("Starting getServiceInstanceByName....");
 		ServiceInstanceDto dto = this.service.getServiceInstanceByName(name);
 		log.info("End getServiceInstanceByName....");
+		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/instance/id")
+	public ResponseEntity<ServiceInstanceDto> getServiceInstanceById(
+			@RequestParam(value = "instanceId") Long instanceId) {
+		log.info("Starting getServiceInstanceById....");
+		ServiceInstanceDto dto = this.service.getServiceInstanceById(instanceId);
+		log.info("End getServiceInstanceById....");
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 

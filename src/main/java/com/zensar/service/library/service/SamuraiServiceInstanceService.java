@@ -87,6 +87,7 @@ public class SamuraiServiceInstanceService {
 //					.collect(Collectors.toList());
 //			dto.setServiceLibrary(target);
 		} else {
+			dto.setServiceInstanceId(instance.getServiceInstanceId());
 			dto = updateServiceInstance(dto);
 		}
 		log.info("Finish createServiceInstance..");
@@ -100,9 +101,11 @@ public class SamuraiServiceInstanceService {
 	public ServiceInstanceDto updateServiceInstance(ServiceInstanceDto dto) {
 
 		log.info("Start updateServiceInstance..");
-		String instanceName = dto.getServiceInstanceName();
-		ServiceInstance instance = instanceRepository.findByServiceInstanceName(dto.getServiceInstanceName())
-				.orElseThrow(() -> new ResourceNotFound("Resource not found for instance name: " + instanceName));
+		//String instanceName = dto.getServiceInstanceName();
+//		ServiceInstance instance = instanceRepository.findByServiceInstanceName(dto.getServiceInstanceName())
+//				.orElseThrow(() -> new ResourceNotFound("Resource not found for instance name: " + instanceName));
+		ServiceInstance instance = instanceRepository.findById(dto.getServiceInstanceId())
+				.orElseThrow(() -> new ResourceNotFound("Resource not found for instance id: " + dto.getServiceInstanceId()));
 		BeanUtilToCopyNonNullProperties<ServiceInstanceDto> util = new BeanUtilToCopyNonNullProperties<ServiceInstanceDto>();
 		ServiceInstanceDto instanceDto = new ServiceInstanceDto();
 		BeanUtils.copyProperties(instance, instanceDto);
@@ -154,6 +157,27 @@ public class SamuraiServiceInstanceService {
 				.collect(Collectors.toList());
 		target.setServiceLibrary(serviceLibrary);
 		log.info("End getServiceInstanceByName..");
+		return target;
+	}
+	
+	/**
+	 * @param Instance id
+	 * @return Instance dto
+	 */
+	public ServiceInstanceDto getServiceInstanceById(Long instanceId) {
+		log.info("Start getServiceInstanceById..");
+		ServiceInstance instance = instanceRepository.findById(instanceId)
+				.orElseThrow(() -> new ResourceNotFound("Resource not found for instance id: " + instanceId));
+		ServiceInstanceDto target = new ServiceInstanceDto();
+		BeanUtils.copyProperties(instance, target);
+		List<ServiceLibrary> library = instance.getServiceLibrary();
+		List<ServiceLibraryDto> serviceLibrary = library.stream()
+				.map(e -> new ServiceLibraryDto(null, null, e.getServiceName(), e.getTypeOfService(),
+						e.isServiceDecommisioned(), e.getServiceDescription(), e.getCreationDate(), e.getServiceId(),
+						null))
+				.collect(Collectors.toList());
+		target.setServiceLibrary(serviceLibrary);
+		log.info("End getServiceInstanceById..");
 		return target;
 	}
 
