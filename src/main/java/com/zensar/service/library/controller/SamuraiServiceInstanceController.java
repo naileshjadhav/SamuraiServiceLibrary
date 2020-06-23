@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zensar.service.library.model.ServiceInstanceDto;
@@ -49,9 +48,8 @@ public class SamuraiServiceInstanceController {
 		return new ResponseEntity<ServiceInstanceDto>(dto, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/instance/id")
-	public ResponseEntity<ServiceInstanceDto> getServiceInstanceById(
-			@RequestParam(value = "instanceId") Long instanceId) {
+	@GetMapping(value = "/instance/id/{instanceId}")
+	public ResponseEntity<ServiceInstanceDto> getServiceInstanceById(@PathVariable Long instanceId) {
 		log.info("Starting getServiceInstanceById....");
 		ServiceInstanceDto dto = this.service.getServiceInstanceById(instanceId);
 		log.info("End getServiceInstanceById....");

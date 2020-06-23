@@ -153,7 +153,7 @@ public class SamuraiServiceInstanceService {
 		List<ServiceLibraryDto> serviceLibrary = library.stream()
 				.map(e -> new ServiceLibraryDto(null, null, e.getServiceName(), e.getTypeOfService(),
 						e.isServiceDecommisioned(), e.getServiceDescription(), e.getCreationDate(), e.getServiceId(),
-						null))
+						e.getLogoImage()))
 				.collect(Collectors.toList());
 		target.setServiceLibrary(serviceLibrary);
 		log.info("End getServiceInstanceByName..");
@@ -174,7 +174,7 @@ public class SamuraiServiceInstanceService {
 		List<ServiceLibraryDto> serviceLibrary = library.stream()
 				.map(e -> new ServiceLibraryDto(null, null, e.getServiceName(), e.getTypeOfService(),
 						e.isServiceDecommisioned(), e.getServiceDescription(), e.getCreationDate(), e.getServiceId(),
-						null))
+						e.getLogoImage()))
 				.collect(Collectors.toList());
 		target.setServiceLibrary(serviceLibrary);
 		log.info("End getServiceInstanceById..");
