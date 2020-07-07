@@ -13,6 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "serviceInstanceId")
 public class ServiceInstance {
 
 	@Id
@@ -34,8 +39,9 @@ public class ServiceInstance {
 	@Column(name = "is_inactive", columnDefinition = "bit default false")
 	private Boolean isInActive;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ServiceLibrary.class)
 	@JoinTable(name = "service_library_instance", joinColumns = @JoinColumn(name = "service_instance_id"), inverseJoinColumns = @JoinColumn(name = "service_id"))
+	@JsonManagedReference
 	private List<ServiceLibrary> serviceLibrary = new ArrayList<ServiceLibrary>();
 
 	public boolean addServiceLibrary(ServiceLibrary e) {

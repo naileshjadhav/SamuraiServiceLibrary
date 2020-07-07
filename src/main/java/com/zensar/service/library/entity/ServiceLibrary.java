@@ -16,6 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +29,7 @@ import lombok.ToString;
 @Entity(name = "service_library")
 @ToString(exclude = "logoImage")
 @Data
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "serviceId")
 public class ServiceLibrary {
 
 	@Column(name = "service_id", length = 10)
@@ -34,8 +37,10 @@ public class ServiceLibrary {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long serviceId;
 
-	@ManyToMany(mappedBy = "serviceLibrary",fetch = FetchType.LAZY)
+	@ManyToMany(mappedBy = "serviceLibrary", fetch = FetchType.LAZY, targetEntity = ServiceInstance.class)
 	@JsonBackReference
+	// @JsonSerialize(using = CustomListSerializer.class)
+	// @JsonDeserialize(using = CustomListDeserializer.class)
 	private Set<ServiceInstance> serviceInstance = new HashSet<ServiceInstance>();
 
 	public boolean addServiceInstance(ServiceInstance instance) {
