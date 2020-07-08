@@ -1,4 +1,0 @@
-Required things as follows
-Os: Ubuntu v18
-CPU: 8 cores
-RAM: 32 GB

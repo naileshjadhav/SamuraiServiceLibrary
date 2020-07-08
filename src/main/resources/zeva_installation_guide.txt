@@ -1,0 +1,5 @@
+Zeva environment setup essentials as below 
+Service: Zeva
+Os: Ubuntu v18
+CPU: 8 cores
+RAM: 32 GB
